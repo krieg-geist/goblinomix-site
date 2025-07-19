@@ -39,9 +39,10 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.website.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.website.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && !PathPrefix(`/projects`)"
       - "traefik.http.routers.website.entrypoints=websecure"
       - "traefik.http.routers.website.tls=true"
+      - "traefik.http.routers.website.priority=1"
       - "traefik.http.services.website.loadbalancer.server.port=80"
     networks:
       - traefik
@@ -61,6 +62,7 @@ services:
       - "traefik.http.routers.bus-synth.rule=Host(`${DOMAIN}`) && PathPrefix(`/projects/bus-synth`)"
       - "traefik.http.routers.bus-synth.entrypoints=websecure"
       - "traefik.http.routers.bus-synth.tls=true"
+      - "traefik.http.routers.bus-synth.priority=10"
       - "traefik.http.services.bus-synth.loadbalancer.server.port=3000"
       - "traefik.http.middlewares.bus-synth-stripprefix.stripprefix.prefixes=/projects/bus-synth"
       - "traefik.http.routers.bus-synth.middlewares=bus-synth-stripprefix"
@@ -68,6 +70,7 @@ services:
       - "traefik.http.routers.bus-synth-ws.rule=Host(`${DOMAIN}`) && PathPrefix(`/projects/bus-synth/ws`)"
       - "traefik.http.routers.bus-synth-ws.entrypoints=websecure"
       - "traefik.http.routers.bus-synth-ws.tls=true"
+      - "traefik.http.routers.bus-synth-ws.priority=20"
       - "traefik.http.services.bus-synth-ws.loadbalancer.server.port=8765"
       - "traefik.http.middlewares.bus-synth-ws-stripprefix.stripprefix.prefixes=/projects/bus-synth/ws"
       - "traefik.http.routers.bus-synth-ws.middlewares=bus-synth-ws-stripprefix"
