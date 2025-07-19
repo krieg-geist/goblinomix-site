@@ -63,7 +63,8 @@ services:
       - "traefik.http.routers.bus-synth.entrypoints=websecure"
       - "traefik.http.routers.bus-synth.tls=true"
       - "traefik.http.routers.bus-synth.priority=10"
-      - "traefik.http.services.bus-synth.loadbalancer.server.port=3000"
+      - "traefik.http.routers.bus-synth.service=bus-synth-http"
+      - "traefik.http.services.bus-synth-http.loadbalancer.server.port=3000"
       - "traefik.http.middlewares.bus-synth-stripprefix.stripprefix.prefixes=/projects/bus-synth"
       - "traefik.http.routers.bus-synth.middlewares=bus-synth-stripprefix"
       # WebSocket route
@@ -71,7 +72,8 @@ services:
       - "traefik.http.routers.bus-synth-ws.entrypoints=websecure"
       - "traefik.http.routers.bus-synth-ws.tls=true"
       - "traefik.http.routers.bus-synth-ws.priority=20"
-      - "traefik.http.services.bus-synth-ws.loadbalancer.server.port=8765"
+      - "traefik.http.routers.bus-synth-ws.service=bus-synth-websocket"
+      - "traefik.http.services.bus-synth-websocket.loadbalancer.server.port=8765"
       - "traefik.http.middlewares.bus-synth-ws-stripprefix.stripprefix.prefixes=/projects/bus-synth/ws"
       - "traefik.http.routers.bus-synth-ws.middlewares=bus-synth-ws-stripprefix"
     networks:
