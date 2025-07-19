@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goblinomix Heavy Industries - Under Construction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #e0e0e0;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .logo {
+            width: 180px;
+            height: auto;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 15px rgba(0, 255, 65, 0.4));
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: #00ff41;
+            text-shadow: 0 0 8px #00ff41;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #00cc33;
+            letter-spacing: 3px;
+            margin-top: -0.5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .blink {
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="/assets/goblinomix-logo.webp" alt="Goblinomix Logo" class="logo">
+        <h1>GOBLINOMIX</h1>
+        <div class="subtitle">HEAVY INDUSTRIES</div>
+        <p>Under Construction</p>
+        <p>(come back later)</p>
+        <span class="blink">█</span>
+    </div>
+</body>
+
+</html>

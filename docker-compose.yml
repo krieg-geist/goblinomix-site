@@ -1,0 +1,86 @@
+---
+
+services:
+  traefik:
+    image: traefik:v3.4
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Traefik dashboard
+    environment:
+      - TRAEFIK_API_DASHBOARD=true
+      - TRAEFIK_API_INSECURE=true
+      - TRAEFIK_PROVIDERS_DOCKER=true
+      - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false
+      - TRAEFIK_ENTRYPOINTS_WEB_ADDRESS=:80
+      - TRAEFIK_ENTRYPOINTS_WEBSECURE_ADDRESS=:443
+      - TRAEFIK_PROVIDERS_FILE_DIRECTORY=/etc/traefik/dynamic
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/certs:/etc/traefik/certs:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+    networks:
+      - traefik
+
+  nginx:
+    image: nginx:alpine
+    container_name: website
+    restart: unless-stopped
+    volumes:
+      - ./nginx/html:/usr/share/nginx/html:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.website.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.website.entrypoints=websecure"
+      - "traefik.http.routers.website.tls=true"
+      - "traefik.http.services.website.loadbalancer.server.port=80"
+    networks:
+      - traefik
+    depends_on:
+      - traefik
+
+  bus-synth:
+    build: ./bus-synth-ng
+    container_name: bus-synth
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+      - WS_PORT=8765
+    labels:
+      - "traefik.enable=true"
+      # HTTP route
+      - "traefik.http.routers.bus-synth.rule=Host(`${DOMAIN}`) && PathPrefix(`/projects/bus-synth`)"
+      - "traefik.http.routers.bus-synth.entrypoints=websecure"
+      - "traefik.http.routers.bus-synth.tls=true"
+      - "traefik.http.services.bus-synth.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.bus-synth-stripprefix.stripprefix.prefixes=/projects/bus-synth"
+      - "traefik.http.routers.bus-synth.middlewares=bus-synth-stripprefix"
+      # WebSocket route
+      - "traefik.http.routers.bus-synth-ws.rule=Host(`${DOMAIN}`) && PathPrefix(`/projects/bus-synth/ws`)"
+      - "traefik.http.routers.bus-synth-ws.entrypoints=websecure"
+      - "traefik.http.routers.bus-synth-ws.tls=true"
+      - "traefik.http.services.bus-synth-ws.loadbalancer.server.port=8765"
+      - "traefik.http.middlewares.bus-synth-ws-stripprefix.stripprefix.prefixes=/projects/bus-synth/ws"
+      - "traefik.http.routers.bus-synth-ws.middlewares=bus-synth-ws-stripprefix"
+    networks:
+      - traefik
+    depends_on:
+      - traefik
+
+networks:
+  traefik:
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16

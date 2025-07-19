@@ -1,0 +1,3 @@
+[submodule "bus-synth-ng"]
+	path = bus-synth-ng
+	url = https://github.com/krieg-geist/bus-synth-ng

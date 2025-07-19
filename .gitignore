@@ -1,0 +1,8 @@
+# Environment variables (contains email/domain)
+.env
+
+# Docker volumes and data
+/letsencrypt/
+
+# Logs
+*.log
